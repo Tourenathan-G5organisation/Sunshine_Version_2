@@ -2,6 +2,7 @@ package com.example.android.sunshine.app;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +34,7 @@ public class ForecastFragment extends Fragment {
 
     public static String LOG_TAG = ForecastFragment.class.getSimpleName();
 
+    ArrayAdapter<String> mForecastAdapter;
     public ForecastFragment() {
 
     }
@@ -63,13 +67,13 @@ public class ForecastFragment extends Fragment {
         ArrayList<String> forecastList = new ArrayList<>();
         forecastList.addAll(Arrays.asList(weeklyWeather));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+        mForecastAdapter = new ArrayAdapter<String>(getContext(),
                 R.layout.list_item_forecast, // ID of list item layout
                 R.id.list_item_forecast_textview, //ID of textview to populate
                 forecastList);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(adapter);
+        listView.setAdapter(mForecastAdapter);
 
 
         return rootView;
@@ -91,12 +95,12 @@ public class ForecastFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchWeatherTAsk extends AsyncTask<String, Void, String>{
+    public class FetchWeatherTAsk extends AsyncTask<String, Void, String[]>{
 
         public final String LOG_TAG = FetchWeatherTAsk.class.getSimpleName();
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -170,13 +174,29 @@ public class ForecastFragment extends Fragment {
             }
 
             Log.d(LOG_TAG, "Data: " + forecastJsonStr);
-            return forecastJsonStr;
+            try {
+                return WeatherDataParser.getWeatherDataFromJson(forecastJsonStr, numDays);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.d(LOG_TAG, s);
+        protected void onPostExecute(String[] weekForecast) {
+            if (weekForecast != null){
+                mForecastAdapter.clear();
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                   mForecastAdapter.addAll(Arrays.asList(weekForecast));
+                else {
+                   for (String dayForecast: weekForecast){
+                       mForecastAdapter.add(dayForecast);
+                   }
+               }
+
+                Log.d(LOG_TAG, String.valueOf(weekForecast));
+            }
+
         }
     }
 }

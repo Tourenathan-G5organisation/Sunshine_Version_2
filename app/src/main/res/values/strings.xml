@@ -6,4 +6,11 @@
     <string name="action_settings">Settings</string>
     <string name="action_refresh" translatable="false">Refresh</string>
 
+    <string name="base_url" translatable="false">http://api.openweathermap.org/data/2.5/forecast/daily</string>
+    <string name="forecast_query_param" translatable="false">q</string>
+    <string name="forecast_mode_param" translatable="false">mode</string>
+    <string name="forecast_unit_param" translatable="false">units</string>
+    <string name="forecast_day_param" translatable="false">cnt</string>
+    <string name="forecast_APPID_param" translatable="false">APPID</string>
+    <string name="app_weathermap_id">172cf43b195b37d3429651823f0ac2dd</string>
 </resources>

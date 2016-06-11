@@ -13,4 +13,5 @@
     <string name="forecast_day_param" translatable="false">cnt</string>
     <string name="forecast_APPID_param" translatable="false">APPID</string>
     <string name="app_weathermap_id">172cf43b195b37d3429651823f0ac2dd</string>
+    <string name="title_activity_detail">DetailActivity</string>
 </resources>

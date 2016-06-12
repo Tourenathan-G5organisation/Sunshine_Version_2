@@ -14,4 +14,11 @@
     <string name="forecast_APPID_param" translatable="false">APPID</string>
     <string name="app_weathermap_id">172cf43b195b37d3429651823f0ac2dd</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_setting">Settings</string>
+
+    <string name="permission_denied">Permission Denied.</string>
+
+    <string name="internet_permission_explanation">Internet is needed to fetch weather information</string>
+
+
 </resources>

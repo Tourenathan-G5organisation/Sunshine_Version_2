@@ -1,12 +1,17 @@
 package com.example.android.sunshine.app;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -35,6 +41,8 @@ import java.util.Arrays;
 public class ForecastFragment extends Fragment {
 
     public static String LOG_TAG = ForecastFragment.class.getSimpleName();
+
+    final int MY_PERMISSIONS_REQUEST_INTERNET = 100;
 
     ArrayAdapter<String> mForecastAdapter;
     public ForecastFragment() {
@@ -82,7 +90,7 @@ public class ForecastFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, mForecastAdapter.getItem(position));
                 startActivity(intent);
-               // Toast.makeText(getContext(), mForecastAdapter.getItem(position), Toast.LENGTH_LONG).show();
+                // Toast.makeText(getContext(), mForecastAdapter.getItem(position), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -98,12 +106,65 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_refresh){
+        if (id == R.id.action_refresh) {
 
-            new FetchWeatherTAsk().execute("94043");
-            return  true;
+            // Here, thisActivity is the current activity
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.INTERNET)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.INTERNET)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.INTERNET},
+                            MY_PERMISSIONS_REQUEST_INTERNET);
+                }
+
+            }
+            else{
+                // Has already Internet permission
+                new FetchWeatherTAsk().execute("94043");
+            }
+
+            return true;
         }
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_INTERNET: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    new FetchWeatherTAsk().execute("94043");
+                }
+                else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getContext(), R.string.permission_denied,Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     public class FetchWeatherTAsk extends AsyncTask<String, Void, String[]>{
@@ -197,13 +258,13 @@ public class ForecastFragment extends Fragment {
         protected void onPostExecute(String[] weekForecast) {
             if (weekForecast != null){
                 mForecastAdapter.clear();
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                   mForecastAdapter.addAll(Arrays.asList(weekForecast));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                    mForecastAdapter.addAll(Arrays.asList(weekForecast));
                 else {
-                   for (String dayForecast: weekForecast){
-                       mForecastAdapter.add(dayForecast);
-                   }
-               }
+                    for (String dayForecast: weekForecast){
+                        mForecastAdapter.add(dayForecast);
+                    }
+                }
 
                 Log.d(LOG_TAG, String.valueOf(weekForecast));
             }

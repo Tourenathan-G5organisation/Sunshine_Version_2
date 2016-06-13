@@ -89,6 +89,8 @@ public class ForecastFragment extends Fragment {
         new FetchWeatherTAsk().execute(locationValue);
     }
 
+
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);

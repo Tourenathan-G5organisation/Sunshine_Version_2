@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -61,26 +62,10 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // We will now create some dummy data for the Listview
-
-        // Sample Weather information for a week: day - wether - high/low
-        String[] weeklyWeather = new String[]{
-                "Today - Sunny - 88/63",
-                "Tomorrow - Fuggy - 70/46",
-                "Weds - Cloudy - 72/63",
-                "Thurs - Rainy - 64/51",
-                "Fri - Foggy - 70/46",
-                "Sat - Sunny - 70/68",
-                "Sun - Cloudy - 71/62"
-        };
-
-        ArrayList<String> forecastList = new ArrayList<>();
-        forecastList.addAll(Arrays.asList(weeklyWeather));
-
         mForecastAdapter = new ArrayAdapter<String>(getContext(),
                 R.layout.list_item_forecast, // ID of list item layout
                 R.id.list_item_forecast_textview, //ID of textview to populate
-                forecastList);
+                new ArrayList<String>());
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
@@ -96,6 +81,12 @@ public class ForecastFragment extends Fragment {
 
 
         return rootView;
+    }
+
+    private void updateWeather(){
+        String locationValue = PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        new FetchWeatherTAsk().execute(locationValue);
     }
 
     @Override
@@ -133,7 +124,7 @@ public class ForecastFragment extends Fragment {
             }
             else{
                 // Has already Internet permission
-                new FetchWeatherTAsk().execute("94043");
+                updateWeather();
             }
 
             return true;
@@ -153,7 +144,7 @@ public class ForecastFragment extends Fragment {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
-                    new FetchWeatherTAsk().execute("94043");
+                   updateWeather();
                 }
                 else {
 
@@ -165,6 +156,12 @@ public class ForecastFragment extends Fragment {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTAsk extends AsyncTask<String, Void, String[]>{
@@ -247,7 +244,7 @@ public class ForecastFragment extends Fragment {
 
             Log.d(LOG_TAG, "Data: " + forecastJsonStr);
             try {
-                return WeatherDataParser.getWeatherDataFromJson(forecastJsonStr, numDays);
+                return WeatherDataParser.getWeatherDataFromJson(getContext(), forecastJsonStr, numDays);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

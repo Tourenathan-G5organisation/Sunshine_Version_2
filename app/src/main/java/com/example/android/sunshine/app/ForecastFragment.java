@@ -73,7 +73,34 @@ public class ForecastFragment extends Fragment {
     private void updateWeather(){
         String locationValue = PreferenceManager.getDefaultSharedPreferences(getContext())
                 .getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-        new FetchWeatherTask(getContext(), mForecastAdapter).execute(locationValue);
+
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.INTERNET)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.INTERNET},
+                        MY_PERMISSIONS_REQUEST_INTERNET);
+            }
+
+        }
+        else{
+            // Has already Internet permission
+            new FetchWeatherTask(getContext(), mForecastAdapter).execute(locationValue);
+        }
     }
 
 
@@ -87,34 +114,8 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-
-            // Here, thisActivity is the current activity
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.INTERNET)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                        Manifest.permission.INTERNET)) {
-
-                    // Show an expanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-
-                } else {
-
-                    // No explanation needed, we can request the permission.
-
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.INTERNET},
-                            MY_PERMISSIONS_REQUEST_INTERNET);
-                }
-
-            }
-            else{
-                // Has already Internet permission
-                updateWeather();
-            }
+            // Has already Internet permission
+            updateWeather();
 
             return true;
         }
@@ -133,7 +134,7 @@ public class ForecastFragment extends Fragment {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
-                   updateWeather();
+                    updateWeather();
                 }
                 else {
 

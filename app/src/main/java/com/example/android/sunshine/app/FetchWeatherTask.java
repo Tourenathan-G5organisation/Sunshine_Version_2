@@ -20,7 +20,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -52,9 +51,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     private ArrayAdapter<String> mForecastAdapter;
     private boolean DEBUG = true;
 
-    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter) {
+    public FetchWeatherTask(Context context) {
         mContext = context;
-        mForecastAdapter = forecastAdapter;
+       // mForecastAdapter = forecastAdapter;
     }
 
     /* The date/time conversion code is going to be moved outside the asynctask later,
@@ -295,7 +294,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 cVVector.toArray(cvArray);
                 mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, cvArray);
             }
-
+            Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
+/*
             // Sort order:  Ascending, by date.
             String sortOrder = WeatherEntry.COLUMN_DATE + " ASC";
             Uri weatherForLocationUri = WeatherEntry.buildWeatherLocationWithStartDate(
@@ -315,10 +315,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 } while (cur.moveToNext());
             }
 
-            Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
+
 
             String[] resultStrs = convertContentValuesToUXFormat(cVVector);
-            return resultStrs;
+            return resultStrs;*/
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -423,12 +423,12 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
     @Override
     protected void onPostExecute(String[] result) {
-        if (result != null && mForecastAdapter != null) {
+       /* if (result != null && mForecastAdapter != null) {
             mForecastAdapter.clear();
             for(String dayForecastStr : result) {
                 mForecastAdapter.add(dayForecastStr);
             }
             // New data is back from the server.  Hooray!
-        }
+        }*/
     }
 }

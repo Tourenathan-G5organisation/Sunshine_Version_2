@@ -155,7 +155,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
-
+    public void onLocationChanged(){
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -200,11 +203,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateWeather();
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

@@ -1,6 +1,7 @@
 package com.example.android.sunshine.app;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -77,7 +79,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-       getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
+        getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
     }
 
     @Override
@@ -94,15 +96,27 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, mForecastAdapter.getItem(position));
-                startActivity(intent);
-                // Toast.makeText(getContext(), mForecastAdapter.getItem(position), Toast.LENGTH_LONG).show();
-            }
-        });*/
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                                                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                                                // if it cannot seek to that position.
+                                                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                                                if (cursor != null) {
+                                                    String locationSetting = Utility.getPreferredLocation(getActivity());
+                                                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                                                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
+                                                            ));
+
+                                                    startActivity(intent);
+                                                    // Toast.makeText(getContext(), mForecastAdapter.getItem(position), Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        }
+        );
 
 
         return rootView;

@@ -158,7 +158,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mDayTextview.setText(friendlyDateText);
         mDateTextview.setText(dateText);
 
-        String weatherDescription = data.getString(COL_WEATHER_DESC);
+        int weather_condition_id = data.getInt(COL_WEATHER_CONDITION_ID);
+        mImage.setImageResource(Utility.getArtResourceForWeatherCondition(weather_condition_id));
+
         boolean isMetric = Utility.isMetric(getContext());
 
         // Read description from cursor and update view

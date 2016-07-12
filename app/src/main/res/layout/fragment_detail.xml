@@ -17,14 +17,12 @@
 <TextView
     android:id="@+id/detail_day_textview"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Today"/>
+    android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/detail_date_textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="June 24"/>
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,14 +39,12 @@
                 <TextView
                     android:id="@+id/detail_high_textview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="21"/>
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:id="@+id/detail_low_textview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="9"/>
+                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
 
@@ -62,14 +58,12 @@
                 <ImageView
                     android:id="@+id/detail_imageview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_launcher"/>
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/detail_forecast_textview"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Clear"/>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -78,20 +72,17 @@
         <TextView
             android:id="@+id/detail_humidity_textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="48%"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/detail_wind_textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="6 km/h NW"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/detail_pressure_textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="101"/>
+            android:layout_height="wrap_content" />
 
 
 

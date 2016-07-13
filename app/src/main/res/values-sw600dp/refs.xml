@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+     We use layout aliasing to replace the the single Pane UI version with the
+     Two pane UI version for large screens-->
+    <item name="fragment_detail" type="layout">@layout/fragment_detail_wide</item>
+</resources>

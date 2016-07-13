@@ -64,6 +64,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     final int MY_PERMISSIONS_REQUEST_INTERNET = 100;
     final int FORECAST_LOADER_ID = 1;
     ForecastAdapter mForecastAdapter;
+    int mItemposition = ListView.INVALID_POSITION;
+    String SELECTED_KEY = "position";
+    ListView mListview;
+
     public ForecastFragment() {
 
     }
@@ -93,15 +97,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(mForecastAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListview = (ListView) rootView.findViewById(R.id.listview_forecast);
+        mListview.setAdapter(mForecastAdapter);
+        mListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
                                                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                                                 // if it cannot seek to that position.
+                                                mItemposition = position;
                                                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                                                 if (cursor != null) {
                                                     String locationSetting = Utility.getPreferredLocation(getActivity());
@@ -116,6 +121,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                                         }
         );
 
+        // Get back the posotion of the element before the device got rotated
+        if (null != savedInstanceState && savedInstanceState.containsKey(SELECTED_KEY)){
+            // The listview probally hasn't beem populated yet. Perform the swapout in the onLoadfinished
+            mItemposition = savedInstanceState.getInt(SELECTED_KEY);
+
+        }
 
         return rootView;
     }
@@ -222,11 +233,28 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
+        if (mItemposition != ListView.INVALID_POSITION){
+            mListview.smoothScrollToPosition(mItemposition);
+        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mForecastAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablet rotate, the cureent selected list item need to be saved.
+        // When no item is selected, the mItemposition will be set to Listview.INVALID_POSITION,
+        // so we check that before storing
+        // This fragment only uses one loader. So we don't care about checking the ID of the loader.
+        if (mItemposition != ListView.INVALID_POSITION){
+            outState.putInt(SELECTED_KEY, mItemposition);
+        }
+
+        super.onSaveInstanceState(outState);
     }
 
     /**

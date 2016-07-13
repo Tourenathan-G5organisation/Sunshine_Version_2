@@ -63,10 +63,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public static String LOG_TAG = ForecastFragment.class.getSimpleName();
     final int MY_PERMISSIONS_REQUEST_INTERNET = 100;
     final int FORECAST_LOADER_ID = 1;
-    ForecastAdapter mForecastAdapter;
     int mItemposition = ListView.INVALID_POSITION;
     String SELECTED_KEY = "position";
     ListView mListview;
+    boolean mUseTodayLayout;
+    private ForecastAdapter mForecastAdapter;
 
     public ForecastFragment() {
 
@@ -85,6 +86,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
     }
 
+    public void setUseTodayLayout(boolean useTodayLayout){
+        mUseTodayLayout = useTodayLayout;
+        if (mForecastAdapter != null){
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,30 +103,30 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
 
         mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
-
+        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
         mListview = (ListView) rootView.findViewById(R.id.listview_forecast);
         mListview.setAdapter(mForecastAdapter);
         mListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                            @Override
-                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                             @Override
+                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                                                // CursorAdapter returns a cursor at the correct position for getItem(), or null
-                                                // if it cannot seek to that position.
-                                                mItemposition = position;
-                                                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                                                if (cursor != null) {
-                                                    String locationSetting = Utility.getPreferredLocation(getActivity());
+                                                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                                                 // if it cannot seek to that position.
+                                                 mItemposition = position;
+                                                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                                                 if (cursor != null) {
+                                                     String locationSetting = Utility.getPreferredLocation(getActivity());
 
-                                                    Uri detailUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                                            locationSetting, cursor.getLong(COL_WEATHER_DATE));
+                                                     Uri detailUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                                             locationSetting, cursor.getLong(COL_WEATHER_DATE));
 
-                                                    ((Callback) getActivity())
-                                                           .onItemSelected(detailUri);
-                                                }
-                                            }
-                                        }
+                                                     ((Callback) getActivity())
+                                                             .onItemSelected(detailUri);
+                                                 }
+                                             }
+                                         }
         );
 
         // Get back the posotion of the element before the device got rotated
